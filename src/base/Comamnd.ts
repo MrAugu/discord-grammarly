@@ -4,6 +4,8 @@ import { InformationOptions, ConfigurationOptions, Command as CommandInterface, 
 export abstract class Command implements CommandInterface {
   public info: InformationOptions;
   public config: ConfigurationOptions;
+  public abstract run(message: Message): void;
+  public abstract init(message: Message): void;
 
   constructor (client: Client, options: CommandOptions) {
     this.info = {
@@ -21,9 +23,5 @@ export abstract class Command implements CommandInterface {
       permission: options.config.permission || 0,
       operationPermissions: options.config.operationPermissions
     };
-  }
-
-  run (message: Message) {
-    return;
   }
 }
