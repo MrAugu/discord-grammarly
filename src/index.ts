@@ -1,5 +1,7 @@
 import * as dotenv from "dotenv";
 import { sep } from "path";
+import { Client, Collection } from "discord.js";
+import { Command } from "./base/Comamnd";
 
 var pathArray: string[] = [];
 pathArray = __dirname.split(sep);
@@ -9,3 +11,7 @@ pathArray.push(".env");
 dotenv.config({
   path: pathArray.join(sep)
 });
+
+class DiscordClient extends Client {
+  commands:  Collection<string, Command>;
+} 
