@@ -1,13 +1,9 @@
-import { Client, Message } from "discord.js";
-import { InformationOptions, ConfigurationOptions, CommandOptions } from "./Command";
+import { Message, Client } from "discord.js";
+import { InformationOptions, ConfigurationOptions, Command as CommandInterface, CommandOptions } from "./Command";
 
-export class Command {
+export abstract class Command implements CommandInterface {
   public info: InformationOptions;
   public config: ConfigurationOptions;
-  public run(message: Message): void {
-    return;
-  };
-  constructor (client: Client, options: CommandOptions);
 
   constructor (client: Client, options: CommandOptions) {
     this.info = {
@@ -25,5 +21,9 @@ export class Command {
       permission: options.config.permission || 0,
       operationPermissions: options.config.operationPermissions
     };
+  }
+
+  run (message: Message) {
+    return;
   }
 }

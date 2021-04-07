@@ -5,8 +5,8 @@ export interface InformationOptions {
   description: string;
   category: string;
   usage: string | null;
-} 
-  
+}
+
 export interface ConfigurationOptions {
   enabled: boolean;
   aliases: string[];
@@ -19,4 +19,10 @@ export interface ConfigurationOptions {
 export interface CommandOptions {
   info: InformationOptions;
   config: ConfigurationOptions;
-}
+};
+
+export interface Command {
+  public info: InformationOptions;
+  public config: ConfigurationOptions;
+  public run(message: Message): void;
+};
