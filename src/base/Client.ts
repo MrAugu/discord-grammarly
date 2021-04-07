@@ -1,8 +1,8 @@
 import { Client, Collection, Message, MessageEmbed, Snowflake } from "discord.js";
 import { Command } from "./Command";
-import Config from "./Config";
+import Config from "./Configuration";
 import { promisify } from "util";
-import { Directive } from "./Config";
+import { Directive } from "./Configuration";
 
 export default class DiscordClient extends Client {
   commands:  Collection<string, Command>;
@@ -10,6 +10,7 @@ export default class DiscordClient extends Client {
   aliases: Collection<string, string>;
   orderedDirectives: Directive[];
   // const orderedDirectives: Directive[] = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? 1 : -1);
+  isReady: boolean;
 
   wait(): (ms: number) => Promise<void> {
     return promisify(setTimeout);
