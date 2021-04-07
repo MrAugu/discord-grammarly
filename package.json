@@ -1,0 +1,27 @@
+{
+  "name": "discord-grammarly",
+  "version": "1.0.0",
+  "description": "A small discord bot that listens for messages and sends writing tips in DMs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrAugu/discord-grammarly.git"
+  },
+  "author": "MrAugu#7917",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MrAugu/discord-grammarly/issues"
+  },
+  "homepage": "https://github.com/MrAugu/discord-grammarly#readme",
+  "dependencies": {
+    "@stewartmcgown/grammarly-api": "^1.1.2",
+    "discord.js": "^12.5.3",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.37"
+  }
+}
