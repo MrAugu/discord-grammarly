@@ -9,6 +9,7 @@ export default class DiscordClient extends Client {
   config: Config;
   aliases: Collection<string, string>;
   orderedDirectives: Directive[];
+  // const orderedDirectives: Directive[] = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? 1 : -1);
 
   wait(): (ms: number) => Promise<void> {
     return promisify(setTimeout);
@@ -31,8 +32,8 @@ export default class DiscordClient extends Client {
 
   checkPermission(message: Message): number {
     let level: number = 0;
-    // const orderedDirectives: Directive[] = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? 1 : -1);
     for (const directive of this.orderedDirectives) {
+      if (directive.guildOnly && !message.guild) continue;
       if (directive.test(message)) {
         level = directive.level;
         continue;

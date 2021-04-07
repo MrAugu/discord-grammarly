@@ -9,6 +9,7 @@ export interface DiscordInfo {
 export interface Directive {
   level: number;
   name: string;
+  guildOnly: boolean;
   test(message: Message): number;
 }
 
