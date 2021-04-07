@@ -5,18 +5,18 @@ import { promisify } from "util";
 import { Directive } from "./Configuration";
 
 export default class DiscordClient extends Client {
-  commands:  Collection<string, Command>;
-  config: Config;
-  aliases: Collection<string, string>;
-  orderedDirectives: Directive[];
+  public commands:  Collection<string, Command>;
+  public config: Config;
+  public aliases: Collection<string, string>;
+  private orderedDirectives: Directive[];
   // const orderedDirectives: Directive[] = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? 1 : -1);
-  isReady: boolean;
+  public isFullyReady: boolean;
 
-  wait(): (ms: number) => Promise<void> {
+  public wait(): (ms: number) => Promise<void> {
     return promisify(setTimeout);
   };
 
-  async awaitReply(msg: Message, content: string | MessageEmbed, limit: number = 60000): Promise<Message | undefined> {
+  public async awaitReply(msg: Message, content: string | MessageEmbed, limit: number = 60000): Promise<Message | undefined> {
     const filter: (m: Message) => boolean = m => m.author.id === msg.author.id;
     await msg.channel.send(content);
     try {
