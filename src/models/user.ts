@@ -6,6 +6,7 @@ export interface UserDocument extends Document {
   essential: boolean;
   random: boolean;
   excludedIn: string[];
+  excluded: boolean;
 }
 
 const userSchema = new Schema({
@@ -33,6 +34,11 @@ const userSchema = new Schema({
     type: Array,
     required: true,
     default: []
+  },
+  excluded: {
+    type: Boolean,
+    required: true,
+    default: false
   }
 });
 
