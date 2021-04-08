@@ -24,5 +24,5 @@ export interface CommandOptions {
 export interface Command {
   info: InformationOptions;
   config: ConfigurationOptions;
-  run(message: Message, args: string[], reply: (content: StringResolvable) => Promise<Message>): void;
+  run(message: Message, args: string[], reply: (content: StringResolvable) => Promise<Message>): any;
 };

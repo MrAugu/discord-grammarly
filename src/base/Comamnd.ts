@@ -6,7 +6,7 @@ export abstract class Command implements CommandInterface {
   info: InformationOptions;
   config: ConfigurationOptions;
   client: DiscordClient;
-  abstract run(message: Message, args: string[], reply: (content: StringResolvable) => Promise<Message>): void;
+  abstract run(message: Message, args: string[], reply: (content: StringResolvable) => Promise<Message>): any;
 
   constructor (client: DiscordClient, options: CommandOptions) {
     this.info = {

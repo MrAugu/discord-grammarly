@@ -1,10 +1,16 @@
 import * as dotenv from "dotenv";
 import { sep, parse, ParsedPath } from "path";
-// import { Grammarly } from "@stewartmcgown/grammarly-api";
 import DiscordClient from "./base/Client"; 
 import klaw, { Item } from "klaw";
 import { promisify } from "util";
+import { connect } from "mongoose";
 const readdir: (arg: string) => Promise<string[]> = promisify(require("fs").readdir);
+
+if (!process.env.DB_URL) throw new Error("A database url is required");
+connect(process.env.DB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 
 var pathArray: string[] = [];
 pathArray = __dirname.split(sep);
@@ -19,7 +25,8 @@ const client = new DiscordClient({
   ws: {
     intents: [
       "GUILDS",
-      "GUILD_MESSAGES"
+      "GUILD_MESSAGES",
+      "DIRECT_MESSAGES"
     ]
   }
 });

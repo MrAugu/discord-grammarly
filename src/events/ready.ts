@@ -7,9 +7,8 @@ export default class ReadyEvent {
     this.client = client;
   }
 
-  run(): void {
+  run(): any {
     console.log(`Bot reached the ready state.`);
     this.client.isFullyReady = true;
-    console.log(this.client);
   }
 }
