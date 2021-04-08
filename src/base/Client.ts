@@ -6,6 +6,7 @@ import { Directive } from "./Configuration";
 import { sep } from "path";
 import { Grammarly } from "@stewartmcgown/grammarly-api";
 import DetectLanguage from "detectlanguage";
+import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
 
 export default class DiscordClient extends Client {
   commands:  Collection<string | undefined, Command>;
@@ -14,6 +15,7 @@ export default class DiscordClient extends Client {
   isFullyReady: boolean;
   grammarly: Grammarly;
   detectLanguage: DetectLanguage;
+  #encryptionAlgorithm: string;
   private orderedDirectives: Directive[];
 
   constructor(options?: ClientOptions) {
@@ -53,6 +55,7 @@ export default class DiscordClient extends Client {
     this.orderedDirectives = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? -1 : 1);
     this.grammarly = new Grammarly();
     this.detectLanguage = new DetectLanguage(process.env.DETECT_LANGUAGE ? process.env.DETECT_LANGUAGE : "None");
+    this.#encryptionAlgorithm = "aes-256-cbc"; 
   }
 
   wait(): (ms: number) => Promise<void> {
@@ -133,5 +136,30 @@ export default class DiscordClient extends Client {
     }
 
     return length;
+  }
+
+  encryptContent (content: string): string {
+    const iv = Buffer.from("jeusheo39aoe9awq");
+    const chiper = createCipheriv(this.#encryptionAlgorithm, Buffer.from(process.env.CRYPTO_KEY ? process.env.CRYPTO_KEY : "heiwjsbh39sjehcbwidoehwm38636475"), iv);
+    const encrypted = Buffer.concat([chiper.update(Buffer.from(content)), chiper.final()]);
+    return JSON.stringify({
+      iv: iv.toString("hex"),
+      data: encrypted.toString("hex")
+    });
+  }
+
+  decryptContent (content: string): string {
+    const crypted = JSON.parse(content);
+    const dechiper = createDecipheriv(this.#encryptionAlgorithm, process.env.CRYPTO_KEY ? process.env.CRYPTO_KEY : "heiwjsbh39sjehcbwidoehwm3863647", Buffer.from(crypted.iv, "hex"));
+    const decrypted = Buffer.concat([dechiper.update(Buffer.from(crypted.data, "hex")), dechiper.final()]);
+    return decrypted.toString();
+  }
+
+  btoa (content: string): string {
+    return Buffer.from(content).toString("base64");
+  }
+
+  atob (base: string): string {
+    return Buffer.from(base, "base64").toString();
   }
 }

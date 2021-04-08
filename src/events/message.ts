@@ -1,5 +1,7 @@
 import DiscordClient from "../base/Client";
 import { Message, StringResolvable } from "discord.js";
+import { GuildModel } from "../models/guild";
+import { UserModel } from "../models/user";
 
 export default class MessageEvent {
   client: DiscordClient;
@@ -16,6 +18,6 @@ export default class MessageEvent {
     if (message.author.bot) return;
     if (!message.guild) return reply(`${this.client.config.discord.crossEmoji} You cannot use the Grammarly bot in the DMs, however, you can invite it:\n> <https://discord.com/oauth2/authorize?client_id=${this.client.user ? this.client.user.id : process.env.CLIENT_ID}&permissions=67628112&scope=applications.commands%20bot>`);
 
-    console.log(this.client.getCleanLength(message.content));
+    
   }
 }
