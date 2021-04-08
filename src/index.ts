@@ -26,18 +26,18 @@ const client = new DiscordClient({
 export default client;
 
 const init: () => Promise<void> = async () => {
-  klaw("./commands").on("data", (item: Item) => {
+  klaw("./dist/commands").on("data", (item: Item) => {
     const commandFile: ParsedPath = parse(item.path);
-    if (!commandFile.ext || commandFile.ext !== ".ts") return;
+    if (!commandFile.ext || commandFile.ext !== ".js") return;
     const response: string | boolean = client.loadCommand(commandFile.dir, `${commandFile.name}${commandFile.ext}`);
     if (response) console.error(response);
   });
 
-  const evtFiles: string[] = await readdir("./events/");
+  const evtFiles: string[] = await readdir("./dist/events/");
   evtFiles.forEach((file) => {
-    if (file.split(".")[1] !== "ts") return;
+    if (file.split(".")[1] !== "js") return;
     const eventName: string = file.split(".")[0];
-    const event: any = new (require(`./events/${file}`))(client);
+    const event: any = new (require(`./events/${file}`).default)(client);
     client.on(eventName, (...args) => event.run(...args));
     delete require.cache[require.resolve(`./events/${file}`)];
   });

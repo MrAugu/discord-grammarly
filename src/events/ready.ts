@@ -1,6 +1,6 @@
 import DiscordClient from "../base/Client";
 
-export default class ReadyEvemt {
+export default class ReadyEvent {
   client: DiscordClient;
   
   constructor (client: DiscordClient) {
