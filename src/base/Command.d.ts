@@ -1,20 +1,19 @@
-import { Message, Client } from "discord.js";
+import { Message, Client, PermissionString, StringResolvable } from "discord.js";
 
 export interface InformationOptions {
   name: string;
   description: string;
   category: string;
   usage: string | null;
-  location: string | null;
+  location?: string | null;
 }
 
 export interface ConfigurationOptions {
   enabled: boolean;
   aliases: string[];
-  inputFormat: string | null;
   privilege: number;
   permission: number;
-  operationPermissions: string[];
+  operationPermissions: PermissionString[];
 }
   
 export interface CommandOptions {
@@ -23,7 +22,7 @@ export interface CommandOptions {
 };
 
 export interface Command {
-  public info: InformationOptions;
-  public config: ConfigurationOptions;
-  public run(message: Message): void;
+  info: InformationOptions;
+  config: ConfigurationOptions;
+  run(message: Message, args: string[], reply: (content: StringResolvable) => Promise<Message>): void;
 };

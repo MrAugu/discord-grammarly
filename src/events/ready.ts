@@ -10,5 +10,6 @@ export default class ReadyEvent {
   run(): void {
     console.log(`Bot reached the ready state.`);
     this.client.isFullyReady = true;
+    console.log(this.client);
   }
 }

@@ -46,7 +46,7 @@ export default class DiscordClient extends Client {
     };
     this.aliases = new Collection();
     this.isFullyReady = false;
-    this.orderedDirectives = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? 1 : -1);
+    this.orderedDirectives = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? -1 : 1);
   }
 
   public wait(): (ms: number) => Promise<void> {
@@ -84,7 +84,7 @@ export default class DiscordClient extends Client {
 
   loadCommand (cmdPath: string, cmdName: string): string | boolean {
     try {
-      const props: Command = new (require(`${cmdPath}${sep}${cmdName}`))(this);
+      const props: Command = new (require(`${cmdPath}${sep}${cmdName}`).default)(this);
       props.info.location = cmdPath;
       props.config.aliases.forEach((alias: string) => {
         this.aliases.set(alias, props.info.name);
