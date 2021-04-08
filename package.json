@@ -19,9 +19,11 @@
   "dependencies": {
     "@stewartmcgown/grammarly-api": "^1.1.2",
     "discord.js": "^12.5.3",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "klaw": "^3.0.0"
   },
   "devDependencies": {
+    "@types/klaw": "^3.0.1",
     "@types/node": "^14.14.37"
   }
 }

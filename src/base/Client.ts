@@ -90,7 +90,7 @@ export default class DiscordClient extends Client {
         this.aliases.set(alias, props.info.name);
       });
       this.commands.set(props.info.name, props);
-      return true;
+      return false;
     } catch (e) {
       return `Cannot load the ${cmdName} command.`;
     }
