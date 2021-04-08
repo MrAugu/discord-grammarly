@@ -5,14 +5,14 @@ export abstract class Command implements CommandInterface {
   public info: InformationOptions;
   public config: ConfigurationOptions;
   public abstract run(message: Message): void;
-  public abstract init(message: Message): void;
 
   constructor (client: Client, options: CommandOptions) {
     this.info = {
       name: options.info.name,
       description: options.info.description,
       category: options.info.category,
-      usage: options.info.usage || null
+      usage: options.info.usage || null,
+      location: null
     };
 
     this.config = {

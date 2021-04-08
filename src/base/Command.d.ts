@@ -5,6 +5,7 @@ export interface InformationOptions {
   description: string;
   category: string;
   usage: string | null;
+  location: string | null;
 }
 
 export interface ConfigurationOptions {
