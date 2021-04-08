@@ -4,12 +4,16 @@ import Config from "./Configuration";
 import { promisify } from "util";
 import { Directive } from "./Configuration";
 import { sep } from "path";
+import { Grammarly } from "@stewartmcgown/grammarly-api";
+import DetectLanguage from "detectlanguage";
 
 export default class DiscordClient extends Client {
   commands:  Collection<string | undefined, Command>;
   config: Config;
   aliases: Collection<string, string>;
   isFullyReady: boolean;
+  grammarly: Grammarly;
+  detectLanguage: DetectLanguage;
   private orderedDirectives: Directive[];
 
   constructor(options?: ClientOptions) {
@@ -47,9 +51,11 @@ export default class DiscordClient extends Client {
     this.aliases = new Collection();
     this.isFullyReady = false;
     this.orderedDirectives = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? -1 : 1);
+    this.grammarly = new Grammarly();
+    this.detectLanguage = new DetectLanguage(process.env.DETECT_LANGUAGE ? process.env.DETECT_LANGUAGE : "None");
   }
 
-  public wait(): (ms: number) => Promise<void> {
+  wait(): (ms: number) => Promise<void> {
     return promisify(setTimeout);
   };
 
@@ -107,5 +113,25 @@ export default class DiscordClient extends Client {
 
     delete require.cache[require.resolve(`${commandPath}${sep}${commandName}.js`)];
     return false;
+  }
+
+  getLocale (content: string): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      this.detectLanguage.detectCode(content).then(function (result) {
+        resolve(result);
+      }).catch(() => reject(null));
+    });
+  }
+
+  getCleanLength (content: string): number {
+    const charSet: string[] = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm".split("");
+    var length: number = 0;
+
+    for (const character of content.split("")) {
+      if (charSet.includes(character)) length++;
+      else continue;
+    }
+
+    return length;
   }
 }

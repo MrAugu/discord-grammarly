@@ -6,12 +6,6 @@ import { promisify } from "util";
 import { connect } from "mongoose";
 const readdir: (arg: string) => Promise<string[]> = promisify(require("fs").readdir);
 
-if (!process.env.DB_URL) throw new Error("A database url is required");
-connect(process.env.DB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-
 var pathArray: string[] = [];
 pathArray = __dirname.split(sep);
 pathArray.pop();
@@ -20,6 +14,12 @@ pathArray.push(".env");
 dotenv.config({
   path: pathArray.join(sep)
 });
+
+if (!process.env.DB_URL) throw new Error("A database url is required");
+connect(process.env.DB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 
 const client = new DiscordClient({
   ws: {
