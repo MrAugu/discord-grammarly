@@ -22,11 +22,12 @@
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
     "klaw": "^3.0.0",
+    "lodash": "^4.17.21",
     "mongoose": "^5.12.3"
   },
   "devDependencies": {
-    "@types/franc": "^5.0.0",
     "@types/klaw": "^3.0.1",
+    "@types/lodash": "^4.14.168",
     "@types/mongoose": "^5.10.4",
     "@types/node": "^14.14.37"
   }

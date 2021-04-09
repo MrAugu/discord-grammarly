@@ -21,7 +21,11 @@ const guildSchema = new Schema({
   excluded: {
     type: Object,
     requied: false,
-    default: {}
+    default: {
+      roles: [],
+      channels: [],
+      users: []
+    }
   },
   prefix: {
     type: String,

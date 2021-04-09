@@ -47,8 +47,8 @@ export default class MessageEvent {
       userPreferences = await UserModel.findOne({ id: message.author.id });
     }
 
-    console.log(userPreferences, guildSettings);
-    
+    this.client.grammarly.fire(message, guildSettings, userPreferences);
+  
     const mentionHelp: RegExp = new RegExp(`^<@!?${this.client.user?.id}>( |)$`);
     if (message.content.match(mentionHelp)) {
       return reply(`I'm grammarly! A discord bot that helps you gain an insight on your writing.\nYou can call me by using \`${guildSettings?.prefix}\`!`);
