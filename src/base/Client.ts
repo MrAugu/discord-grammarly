@@ -168,4 +168,10 @@ export default class DiscordClient extends Client {
     if (process.env.ADMINS && process.env.ADMINS.split(",").includes(message.author.id)) return 1;
     return 0;
   }
+
+  public isMessagePrefixed (content: string): boolean {
+    const charSet = "!$^&`~%^&*()-_=+/?.,><".split("");
+    if (charSet.includes(content[0]) || charSet.includes(content[1]) || charSet.includes(content[2])) return true;
+    else return false;
+  }
 }

@@ -11,7 +11,7 @@ const languageSchema = new Schema({
     requied: true,
     unique: true
   },
-  response: {
+  language: {
     type: String,
     required: true
   }
