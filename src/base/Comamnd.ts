@@ -3,12 +3,12 @@ import { InformationOptions, ConfigurationOptions, Command as CommandInterface, 
 import DiscordClient from "./Client";
 
 export abstract class Command implements CommandInterface {
-  info: InformationOptions;
-  config: ConfigurationOptions;
-  client: DiscordClient;
-  abstract run(message: Message, args: string[], reply: (content: StringResolvable) => Promise<Message>): any;
+  public info: InformationOptions;
+  public config: ConfigurationOptions;
+  public client: DiscordClient;
+  public abstract run(message: Message, args: string[], reply: (content: StringResolvable) => Promise<Message>): any;
 
-  constructor (client: DiscordClient, options: CommandOptions) {
+  public constructor (client: DiscordClient, options: CommandOptions) {
     this.info = {
       name: options.info.name,
       description: options.info.description,

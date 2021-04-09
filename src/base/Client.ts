@@ -4,21 +4,21 @@ import Config from "./Configuration";
 import { promisify } from "util";
 import { Directive } from "./Configuration";
 import { sep } from "path";
-import { Grammarly } from "@stewartmcgown/grammarly-api";
 import DetectLanguage from "detectlanguage";
-import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
+import { createCipheriv, createDecipheriv } from "crypto";
+import Grammarly from "./Grammarly";
 
 export default class DiscordClient extends Client {
-  commands:  Collection<string | undefined, Command>;
-  config: Config;
-  aliases: Collection<string | undefined, string>;
-  isFullyReady: boolean;
-  grammarly: Grammarly;
-  detectLanguage: DetectLanguage;
+  public commands:  Collection<string | undefined, Command>;
+  public config: Config;
+  public aliases: Collection<string | undefined, string>;
+  public isFullyReady: boolean;
+  public grammarly: Grammarly;
+  public detectLanguage: DetectLanguage;
   #encryptionAlgorithm: string;
   private orderedDirectives: Directive[];
 
-  constructor(options?: ClientOptions) {
+  public constructor(options?: ClientOptions) {
     super(options);
 
     this.commands = new Collection();
@@ -53,16 +53,16 @@ export default class DiscordClient extends Client {
     this.aliases = new Collection();
     this.isFullyReady = false;
     this.orderedDirectives = this.config.directives.sort((dOne: Directive, dTwo: Directive) => dOne.level < dTwo.level ? -1 : 1);
-    this.grammarly = new Grammarly();
+    this.grammarly = new Grammarly(this);
     this.detectLanguage = new DetectLanguage(process.env.DETECT_LANGUAGE ? process.env.DETECT_LANGUAGE : "None");
-    this.#encryptionAlgorithm = "aes-256-cbc"; 
+    this.#encryptionAlgorithm = "aes-256-cbc";
   }
 
-  wait(): (ms: number) => Promise<void> {
+  public wait(): (ms: number) => Promise<void> {
     return promisify(setTimeout);
   };
 
-  async awaitReply(msg: Message, content: string | MessageEmbed, limit: number = 60000): Promise<Message | undefined> {
+  public async awaitReply(msg: Message, content: string | MessageEmbed, limit: number = 60000): Promise<Message | undefined> {
     const filter: (m: Message) => boolean = m => m.author.id === msg.author.id;
     await msg.channel.send(content);
     try {
@@ -77,7 +77,7 @@ export default class DiscordClient extends Client {
     }
   }
 
-  checkPermission(message: Message): number {
+  public checkPermission(message: Message): number {
     let level: number = 0;
     for (const directive of this.orderedDirectives) {
       if (directive.guildOnly && !message.guild) continue;
@@ -91,7 +91,7 @@ export default class DiscordClient extends Client {
     return level;
   }
 
-  loadCommand (cmdPath: string, cmdName: string): string | boolean {
+  public loadCommand (cmdPath: string, cmdName: string): string | boolean {
     try {
       const props: Command = new (require(`${cmdPath}${sep}${cmdName}`).default)(this);
       props.info.location = cmdPath;
@@ -105,7 +105,7 @@ export default class DiscordClient extends Client {
     }
   }
 
-  async unloadCommand (commandPath: string, commandName: string): Promise<string | boolean> {
+  public async unloadCommand (commandPath: string, commandName: string): Promise<string | boolean> {
     let command: Command | undefined;
     if (this.commands.has(commandName)) {
       command = this.commands.get(commandName);
@@ -118,7 +118,7 @@ export default class DiscordClient extends Client {
     return false;
   }
 
-  getLocale (content: string): Promise<string | null> {
+  public getLocale (content: string): Promise<string | null> {
     return new Promise((resolve, reject) => {
       this.detectLanguage.detectCode(content).then(function (result) {
         resolve(result);
@@ -126,7 +126,7 @@ export default class DiscordClient extends Client {
     });
   }
 
-  getCleanLength (content: string): number {
+  public getCleanLength (content: string): number {
     const charSet: string[] = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm".split("");
     var length: number = 0;
 
@@ -138,9 +138,9 @@ export default class DiscordClient extends Client {
     return length;
   }
 
-  encryptContent (content: string): string {
-    const iv = Buffer.from("jeusheo39aoe9awq");
-    const chiper = createCipheriv(this.#encryptionAlgorithm, Buffer.from(process.env.CRYPTO_KEY ? process.env.CRYPTO_KEY : "heiwjsbh39sjehcbwidoehwm38636475"), iv);
+  public encryptContent (content: string): string {
+    const iv = Buffer.from(process.env.CRYPTO_IV ? process.env.CRYPTO_IV : "jeusheo39aoe9awq");
+    const chiper = createCipheriv(this.#encryptionAlgorithm, Buffer.from(process.env.CRYPTO_KEY ? process.env.CRYPTO_KEY : "heiwjsbh39sjehcbwidoehwm38636472"), iv);
     const encrypted = Buffer.concat([chiper.update(Buffer.from(content)), chiper.final()]);
     return JSON.stringify({
       iv: iv.toString("hex"),
@@ -148,22 +148,22 @@ export default class DiscordClient extends Client {
     });
   }
 
-  decryptContent (content: string): string {
+  public decryptContent (content: string): string {
     const crypted = JSON.parse(content);
-    const dechiper = createDecipheriv(this.#encryptionAlgorithm, process.env.CRYPTO_KEY ? process.env.CRYPTO_KEY : "heiwjsbh39sjehcbwidoehwm3863647", Buffer.from(crypted.iv, "hex"));
+    const dechiper = createDecipheriv(this.#encryptionAlgorithm, process.env.CRYPTO_KEY ? process.env.CRYPTO_KEY : "heiwjsbh39sjehcbwidoehwm38636472", Buffer.from(crypted.iv, "hex"));
     const decrypted = Buffer.concat([dechiper.update(Buffer.from(crypted.data, "hex")), dechiper.final()]);
     return decrypted.toString();
   }
 
-  btoa (content: string): string {
+  public btoa (content: string): string {
     return Buffer.from(content).toString("base64");
   }
 
-  atob (base: string): string {
+  public atob (base: string): string {
     return Buffer.from(base, "base64").toString();
   }
 
-  checkPrivilege (message: Message): number {
+  public checkPrivilege (message: Message): number {
     if (message.author.id === process.env.OWNER_ID) return 2;
     if (process.env.ADMINS && process.env.ADMINS.split(",").includes(message.author.id)) return 1;
     return 0;

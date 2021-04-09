@@ -1,9 +1,7 @@
 import DiscordClient from "../base/Client";
-import { Guild, Message, PermissionString, StringResolvable } from "discord.js";
+import { Message, PermissionString, StringResolvable } from "discord.js";
 import { GuildModel, GuildDocument } from "../models/guild";
-import { UserModel } from "../models/user";
-import { Document } from "mongoose";
-import { Command } from "../base/Comamnd";
+import { UserModel, UserDocument } from "../models/user";
 
 export default class MessageEvent {
   client: DiscordClient;
@@ -20,7 +18,7 @@ export default class MessageEvent {
     if (message.author.bot) return;
     if (!message.guild) return reply(`${this.client.config.discord.crossEmoji} You cannot use the Grammarly bot in the DMs, however, you can invite it:\n> <https://discord.com/oauth2/authorize?client_id=${this.client.user ? this.client.user.id : process.env.CLIENT_ID}&permissions=67628112&scope=applications.commands%20bot>`);
 
-    let guildSettings = await GuildModel.findOne({ id: message.guild.id });
+    let guildSettings: GuildDocument | null = await GuildModel.findOne({ id: message.guild.id });
     if (!guildSettings) {
       guildSettings = new GuildModel({
         id: message.guild.id,
@@ -34,6 +32,22 @@ export default class MessageEvent {
       await guildSettings.save();
       guildSettings = await GuildModel.findOne({ id: message.guild.id });
     }
+    
+    let userPreferences: UserDocument | null = await UserModel.findOne({ id: message.author.id });
+    if (!userPreferences) {
+      userPreferences = new UserModel({
+        id: message.author.id,
+        insights: false,
+        essential: false,
+        random: true,
+        excludedIn: [],
+        excluded: false
+      });
+      await userPreferences.save();
+      userPreferences = await UserModel.findOne({ id: message.author.id });
+    }
+
+    console.log(userPreferences, guildSettings);
     
     const mentionHelp: RegExp = new RegExp(`^<@!?${this.client.user?.id}>( |)$`);
     if (message.content.match(mentionHelp)) {
@@ -91,6 +105,11 @@ export default class MessageEvent {
     }
     if (missingPermissions.length) return reply(`${this.client.config.discord.crossEmoji} I do not have required permissions to run this command. Please allow me access to \`${missingPermissions.join("\`, \`")}\` before running this command.`);
 
-    console.log(cmd.info.name);
+    try {
+      await cmd.run(message, args, reply);
+      console.log(`C: ${message.author.tag} ran ${cmd.info.name} in ${message.guild ? message.guild.name : "DMs"}.`);
+    } catch (e: any) {
+      console.error(e);
+    }
   }
 }
