@@ -4,6 +4,11 @@ export interface DiscordInfo {
   tickEmoji: string;
   crossEmoji: string;
   owner_id?: string;
+  redWarning: string;
+  blueWarning: string;
+  greenWarning: string;
+  purpleWarning: string;
+  loader: string;
 }
 
 export interface Directive {

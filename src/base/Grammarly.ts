@@ -33,7 +33,7 @@ export default class Grammarly {
     const grammarlyResponse: string = await this.getGrammarlyResponse(message.content, messageIdentifier);
     const response: GrammarlyReply = JSON.parse(grammarlyResponse);
 
-    
+    if (!response.alerts.length) return;
   }
 
   public encodeContentIdentifier (content: string): string {

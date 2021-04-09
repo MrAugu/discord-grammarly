@@ -1,5 +1,5 @@
-import DiscordClient from "../base/Client";
-import { Message, PermissionString, StringResolvable } from "discord.js";
+import DiscordClient, { Emoji } from "../base/Client";
+import { Message, MessageReaction, PermissionString, StringResolvable } from "discord.js";
 import { GuildModel, GuildDocument } from "../models/guild";
 import { UserModel, UserDocument } from "../models/user";
 
@@ -14,6 +14,10 @@ export default class MessageEvent {
     const reply: (content: StringResolvable) => Promise<Message> = async (content: StringResolvable) => {
       return await message.channel.send(content);
     };
+
+    // const parsedEmoji: Emoji = this.client.parseEmoji(this.client.config.discord.crossEmoji);
+    // await message.react(parsedEmoji.id ? parsedEmoji.id : parsedEmoji.name);
+    // const collected: MessageReaction | undefined = await this.client.awaitReactionReply(message, this.client.config.discord.crossEmoji, 15000);
 
     if (message.author.bot) return;
     if (!message.guild) return reply(`${this.client.config.discord.crossEmoji} You cannot use the Grammarly bot in the DMs, however, you can invite it:\n> <https://discord.com/oauth2/authorize?client_id=${this.client.user ? this.client.user.id : process.env.CLIENT_ID}&permissions=67628112&scope=applications.commands%20bot>`);

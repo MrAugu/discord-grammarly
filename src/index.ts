@@ -27,7 +27,8 @@ const client = new DiscordClient({
     intents: [
       "GUILDS",
       "GUILD_MESSAGES",
-      "DIRECT_MESSAGES"
+      "DIRECT_MESSAGES",
+      "GUILD_MESSAGE_REACTIONS"
     ]
   }
 });

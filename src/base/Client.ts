@@ -1,4 +1,4 @@
-import { Client, Collection, Message, MessageEmbed, Snowflake, ClientOptions } from "discord.js";
+import { Client, Collection, Message, MessageEmbed, Snowflake, ClientOptions, ReactionCollector, ReactionManager, MessageReaction, User } from "discord.js";
 import { Command } from "./Command";
 import Config from "./Configuration";
 import { promisify } from "util";
@@ -7,6 +7,13 @@ import { sep } from "path";
 import DetectLanguage from "detectlanguage";
 import { createCipheriv, createDecipheriv } from "crypto";
 import Grammarly from "./Grammarly";
+
+export interface Emoji {
+  name: string;
+  id?: string;
+  animated?: boolean;
+  raw: string;
+} 
 
 export default class DiscordClient extends Client {
   public commands:  Collection<string | undefined, Command>;
@@ -24,9 +31,14 @@ export default class DiscordClient extends Client {
     this.commands = new Collection();
     this.config = {
       discord: {
-        tickEmoji: "✅",
-        crossEmoji: "❌",
-        owner_id: process.env.OWNER_ID
+        tickEmoji: process.env.TICK || "✅",
+        crossEmoji: process.env.CROSS || "❌", 
+        owner_id: process.env.OWNER_ID,
+        redWarning: process.env.RED_WARNING || "🔴",
+        blueWarning: process.env.BLUE_WARNING || "🔵",
+        greenWarning: process.env.GREEN_WARNING || "🟢",
+        purpleWarning: process.env.PURPLE_WARNING || "🟣",
+        loader: process.env.LOADER || "🛰️"
       },
       directives: [{
         level: 0,
@@ -76,6 +88,45 @@ export default class DiscordClient extends Client {
       return undefined;
     }
   }
+
+  public async awaitReactionReply (message: Message, emote: string, limit: number = 60000, max: number = 1): Promise<MessageReaction | undefined> {
+    const parsedEmoji: Emoji = this.parseEmoji(emote);
+    const filter: (reaction: MessageReaction, user: User) => boolean = (reaction, user) => reaction.emoji.name === parsedEmoji.name && user.id == message.author.id;
+
+    try {
+      const collected: Collection<string, MessageReaction> = await message.awaitReactions(filter, {
+        max: max,
+        time: limit,
+        errors: ["time"]
+      });
+      return collected.first();
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  public parseEmoji (emoji: string): Emoji {
+    let cleanEmoji: string | string[] = emoji.replace(/>/g, "").replace(/</g, "").replace(/:/g, " ");
+    cleanEmoji = cleanEmoji.trim();
+    cleanEmoji = cleanEmoji.split(" ");
+
+    if (cleanEmoji.length < 2) return {
+      raw: emoji,
+      name: emoji
+    };
+    else if (cleanEmoji.length < 3) return {
+      name: cleanEmoji[0],
+      id: cleanEmoji[1],
+      animated: false,
+      raw: emoji
+    }
+    else return {
+      name: cleanEmoji[1],
+      id: cleanEmoji[2],
+      animated: true,
+      raw: emoji
+    };
+  } 
 
   public checkPermission(message: Message): number {
     let level: number = 0;
