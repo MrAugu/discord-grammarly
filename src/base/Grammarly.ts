@@ -6,6 +6,7 @@ import { UserDocument } from "../models/user";
 import * as _ from "lodash";
 import { LanguageModel, LanguageDocument } from "../models/language";
 import { GrammarlyModel, GrammarlyDocument } from "../models/grammarly";
+import GrammarlyReply from "./GrammarlyTypes";
 
 export default class Grammarly {
   public client: DiscordClient;
@@ -26,10 +27,13 @@ export default class Grammarly {
     if (settings.excluded.channels?.length ? settings.excluded.channels.includes(message.channel.id) : false) return;
     if (_.intersection(message.member?.roles.cache.map(r => r.id), settings.excluded.roles ? settings.excluded.roles : []).length > 0) return;
 
-    const messageIdentifier = this.encodeContentIdentifier(message.content);
-    const isEnglish = await this.isEnglish(message.content, messageIdentifier);
+    const messageIdentifier: string = this.encodeContentIdentifier(message.content);
+    const isEnglish: boolean = await this.isEnglish(message.content, messageIdentifier);
     if (!isEnglish) return;
-    const grammarlyResponse = await this.getGrammarlyResponse(message.content, messageIdentifier);
+    const grammarlyResponse: string = await this.getGrammarlyResponse(message.content, messageIdentifier);
+    const response: GrammarlyReply = JSON.parse(grammarlyResponse);
+
+    
   }
 
   public encodeContentIdentifier (content: string): string {
@@ -63,9 +67,9 @@ export default class Grammarly {
 
   public async getGrammarlyResponse (content: string, identifier: string): Promise<string> {
     let grammarlyResponse: GrammarlyDocument | null = await GrammarlyModel.findOne({ content: identifier });
-    if (grammarlyResponse) return this.decodeContentIdentifier(grammarlyResponse.content);
+    if (grammarlyResponse) return this.decodeContentIdentifier(grammarlyResponse.response);
     else {
-      const apiResponse = this.api.analyse(content);
+      const apiResponse = await this.api.analyse(content);
       const apiResponseJson = JSON.stringify(apiResponse);
 
       grammarlyResponse = new GrammarlyModel({
@@ -73,6 +77,7 @@ export default class Grammarly {
         content: identifier,
         response: this.encodeContentIdentifier(apiResponseJson)
       });
+      await grammarlyResponse.save();
 
       return apiResponseJson;
     }

@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface GrammarlyDocument extends Document {
   id: string;
   content: string;
-  respose: string;
+  response: string;
 }
 
 const grammarlySchema = new Schema({
