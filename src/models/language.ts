@@ -17,4 +17,4 @@ const languageSchema = new Schema({
   }
 });
 
-export const LanguageModel = mongoose.model("Languages", languageSchema);
+export const LanguageModel = mongoose.model<LanguageDocument>("Languages", languageSchema);

@@ -11,7 +11,7 @@ import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
 export default class DiscordClient extends Client {
   commands:  Collection<string | undefined, Command>;
   config: Config;
-  aliases: Collection<string, string>;
+  aliases: Collection<string | undefined, string>;
   isFullyReady: boolean;
   grammarly: Grammarly;
   detectLanguage: DetectLanguage;
@@ -161,5 +161,11 @@ export default class DiscordClient extends Client {
 
   atob (base: string): string {
     return Buffer.from(base, "base64").toString();
+  }
+
+  checkPrivilege (message: Message): number {
+    if (message.author.id === process.env.OWNER_ID) return 2;
+    if (process.env.ADMINS && process.env.ADMINS.split(",").includes(message.author.id)) return 1;
+    return 0;
   }
 }

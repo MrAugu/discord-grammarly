@@ -30,4 +30,4 @@ const guildSchema = new Schema({
   }
 });
 
-export const GuildModel = mongoose.model("Guilds", guildSchema);
+export const GuildModel = mongoose.model<GuildDocument>("Guilds", guildSchema);

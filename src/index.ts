@@ -18,7 +18,8 @@ dotenv.config({
 if (!process.env.DB_URL) throw new Error("A database url is required");
 connect(process.env.DB_URL, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useCreateIndex: true
 })
 
 const client = new DiscordClient({

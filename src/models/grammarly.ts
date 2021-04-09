@@ -23,4 +23,4 @@ const grammarlySchema = new Schema({
   }
 });
 
-export const GrammarlyModel = mongoose.model("GrammarlyResponses", grammarlySchema);
+export const GrammarlyModel = mongoose.model<GrammarlyDocument>("GrammarlyResponses", grammarlySchema);

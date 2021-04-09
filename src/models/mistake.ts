@@ -22,4 +22,4 @@ const mistakeSchema = new Schema({
   }
 });
 
-export const MistakeModel = mongoose.model("UserMistakes", mistakeSchema);
+export const MistakeModel = mongoose.model<MistakeDocument>("UserMistakes", mistakeSchema);
