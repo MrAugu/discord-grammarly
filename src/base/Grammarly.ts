@@ -1,6 +1,6 @@
-import DiscordClient from "../base/Client";
+import DiscordClient, { Emoji } from "../base/Client";
 import { Grammarly as GrammarlyAPI } from "@stewartmcgown/grammarly-api";
-import { Message } from "discord.js";
+import { Message, MessageEmbed } from "discord.js";
 import { GuildDocument } from "../models/guild";
 import { UserDocument } from "../models/user";
 import * as _ from "lodash";
@@ -11,13 +11,36 @@ import GrammarlyReply from "./GrammarlyTypes";
 export default class Grammarly {
   public client: DiscordClient;
   public api: GrammarlyAPI;
+  public keepItUpEmbed: MessageEmbed;
 
   public constructor (client: DiscordClient) {
     this.client = client;
     this.api = new GrammarlyAPI();
+
+    this.keepItUpEmbed = new MessageEmbed()
+      .setAuthor(this.client.user?.tag, this.client.user?.displayAvatarURL())
+      .setColor("#198754")
+      .setDescription("A");
+  }
+
+  public generateKeepItUpEmbed (): MessageEmbed {
+    const positiveArray: string[] = [
+      "👍 Keep it up with the perfect messages!",
+      "🥰 Lovely writing. Let's keep it that way.",
+      "👾 So good that you almost don't even need me anymore. Keep going.",
+      "️🕸️🕸️ It's been a while since the last typing error, spider webs started growing around here.",
+      "🎼 Your writing is music to my ears."
+    ];
+    return new MessageEmbed()
+      .setColor("#198754")
+      .setTitle("Writing better already!")
+      .setDescription(positiveArray[Math.floor(Math.random() * positiveArray.length)])
+      .setFooter("Grammarly", this.client.user?.displayAvatarURL())
+      .setTimestamp();
   }
 
   public async fire (message: Message, settings: GuildDocument | null, preferences: UserDocument | null): Promise<any> {
+    if (message.content.length > 1500) return console.log("Not supporting extending beyond 1500 characters.");
     if(this.client.isMessagePrefixed(message.content)) return;
     if (this.client.getCleanLength(message.content) < 10) return;
     if (!settings || !preferences) return; 
@@ -33,7 +56,38 @@ export default class Grammarly {
     const grammarlyResponse: string = await this.getGrammarlyResponse(message.content, messageIdentifier);
     const response: GrammarlyReply = JSON.parse(grammarlyResponse);
 
-    if (!response.alerts.length) return;
+    if (!response.alerts.length) return Math.floor(Math.random() * 100) > 97 ? this.client.deliverMessage(message.author, this.generateKeepItUpEmbed()) : null;
+    
+    let passing: boolean = false;
+
+    const parsedEmoji: Emoji = this.client.parseEmoji(this.client.config.discord.redWarning);
+    await message.react(parsedEmoji.id ? parsedEmoji.id : parsedEmoji.name);
+    const answered = await this.client.awaitReactionReply(message, this.client.config.discord.redWarning, 30000, 1);
+    if (!answered) {
+      message.reactions.removeAll().catch(()=>{});
+      passing = false;
+    } else {
+      message.reactions.removeAll().catch(()=>{});
+      passing = true;
+    }
+
+    if (!passing) return;
+    
+    const alertEmbeds: MessageEmbed[] = [];
+    for (const alert of response.alerts) {
+      const colors = {
+        "critial": "#dc3545",
+        "advanced":  "#ffc107"
+      };
+
+      let alertContent: string = "";
+      alertContent = message.content.substr(alert.highlightBegin - 100, alert.highlightBegin + 100);
+      if (!alertContent.startsWith(message.content.split("").slice(0, 5).join(""))) alertContent = "..." + alertContent;
+      if (!alertContent.endsWith(message.content.split("").slice(message.content.length - 4, message.content.length).join(""))) alertContent += "...";
+      const alertRegex = new RegExp(alert.highlightText);
+      alertContent = alertContent.replace(alertRegex, `~~${alert.highlightText}~~${alert.replacements.length ? `*${alert.replacements.join("")}*` : ""}`);
+      message.channel.send(alertContent);
+    }
   }
 
   public encodeContentIdentifier (content: string): string {

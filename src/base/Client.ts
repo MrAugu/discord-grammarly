@@ -1,4 +1,4 @@
-import { Client, Collection, Message, MessageEmbed, Snowflake, ClientOptions, ReactionCollector, ReactionManager, MessageReaction, User } from "discord.js";
+import { Client, Collection, Message, MessageEmbed, Snowflake, ClientOptions, ReactionCollector, ReactionManager, MessageReaction, User, StringResolvable } from "discord.js";
 import { Command } from "./Command";
 import Config from "./Configuration";
 import { promisify } from "util";
@@ -224,5 +224,13 @@ export default class DiscordClient extends Client {
     const charSet = "!$^&`~%^&*()-_=+/?.,><".split("");
     if (charSet.includes(content[0]) || charSet.includes(content[1]) || charSet.includes(content[2])) return true;
     else return false;
+  }
+  
+  public async deliverMessage (user: User, content: StringResolvable | MessageEmbed): Promise<Message | undefined> {
+    try {
+      return await user.send(content);
+    } catch (e) {
+      return undefined;
+    }
   }
 }

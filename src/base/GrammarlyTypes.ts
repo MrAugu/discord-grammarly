@@ -1,3 +1,9 @@
+export interface ExtraProperties {
+  fluency?: string;
+  j?: string;
+  priority?: string;
+}
+
 export interface JsonContext {
   s: number;
   e: number;
@@ -37,10 +43,10 @@ export interface GrammarlyAlert {
   highlightBegin: number;
   highlightEnd: number;
   highlightText: string;
-//   replacements: Replacements[];
+  replacements: string[];
   transformJson: TransformJson;
   impact: string;
-//   extra_properties: ExtraProperties;
+  extra_properties: ExtraProperties;
   cardLaoyut: CardLayout;
   categoryHuman: string;
   cost: number;
