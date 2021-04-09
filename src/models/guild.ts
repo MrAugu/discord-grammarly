@@ -12,6 +12,8 @@ export interface GuildDocument extends Document {
   prefix: string;
 }
 
+// From there on you can build commands to change these settings.
+
 const guildSchema = new Schema({
   id: {
     type: String,

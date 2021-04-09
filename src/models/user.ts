@@ -42,4 +42,6 @@ const userSchema = new Schema({
   }
 });
 
+// From here you can add commands to edit these preferences.
+
 export const UserModel = mongoose.model<UserDocument>("Users", userSchema);

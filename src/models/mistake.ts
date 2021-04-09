@@ -22,4 +22,6 @@ const mistakeSchema = new Schema({
   }
 });
 
+// From here you can store sent mistakes to user and DM him with reminding him of them with the link.
+
 export const MistakeModel = mongoose.model<MistakeDocument>("UserMistakes", mistakeSchema);

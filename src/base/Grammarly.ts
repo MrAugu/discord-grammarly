@@ -73,6 +73,7 @@ export default class Grammarly {
 
     if (!passing) return;
     
+    console.log(response.alerts.length);
     const alertEmbeds: MessageEmbed[] = [];
     for (const alert of response.alerts) {
       const colors = {
@@ -80,13 +81,15 @@ export default class Grammarly {
         "advanced":  "#ffc107"
       };
 
-      let alertContent: string = "";
-      alertContent = message.content.substr(alert.highlightBegin - 100, alert.highlightBegin + 100);
-      if (!alertContent.startsWith(message.content.split("").slice(0, 5).join(""))) alertContent = "..." + alertContent;
-      if (!alertContent.endsWith(message.content.split("").slice(message.content.length - 4, message.content.length).join(""))) alertContent += "...";
-      const alertRegex = new RegExp(alert.highlightText);
-      alertContent = alertContent.replace(alertRegex, `~~${alert.highlightText}~~${alert.replacements.length ? `*${alert.replacements.join("")}*` : ""}`);
-      message.channel.send(alertContent);
+    //   let alertContent: string = "";
+    //   alertContent = message.content.substr(alert.highlightBegin - 100, alert.highlightBegin + 100);
+    //   if (!alertContent.startsWith(message.content.split("").slice(0, 5).join(""))) alertContent = "..." + alertContent;
+    //   if (!alertContent.endsWith(message.content.split("").slice(message.content.length - 4, message.content.length).join(""))) alertContent += "...";
+    //   const alertRegex = new RegExp(alert.highlightText);
+    //   alertContent = alertContent.replace(alertRegex, `~~${alert.highlightText.trim()}~~${alert.replacements.length ? ` ~~${alert.replacements.join(", ").trim()}~~` : ""}`);
+    //   message.channel.send(alertContent);
+
+    // From there on you can build a formatter and send the alerts to people's DMs.
     }
   }
 
